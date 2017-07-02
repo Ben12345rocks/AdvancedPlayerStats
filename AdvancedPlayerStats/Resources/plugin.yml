@@ -1,0 +1,9 @@
+name: ${project.name}
+description: Some EULA friendly perks.
+author: Ben12345rocks
+version: ${project.version}
+main: com.Ben12345rocks.AdvancedPlayerStats.Main
+commands:
+  advancedplayerstats:
+    description: Main command
+    aliases: [aps,advancedps,playerstats,ps]
