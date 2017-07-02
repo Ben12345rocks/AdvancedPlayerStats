@@ -5,16 +5,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import org.bukkit.command.CommandSender;
 
 import com.Ben12345rocks.AdvancedCore.Objects.CommandHandler;
-import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedCore.Util.Misc.ArrayUtils;
-import com.Ben12345rocks.AdvancedCore.Util.Misc.StringUtils;
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
-import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -60,20 +58,13 @@ public class CommandLoader {
 
 			@Override
 			public void execute(CommandSender sender, String[] args) {
-				sender.sendMessage(StringUtils.getInstance().colorize("&cGetting today's online players"));
-				ArrayList<User> onlineToday = new ArrayList<User>();
-				for (String uuid : UserManager.getInstance().getAllUUIDs()) {
-					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(new UUID(uuid));
-					if (user.wasOnlineToday()) {
-						onlineToday.add(user);
-					}
-				}
+			//	sender.sendMessage(StringUtils.getInstance().colorize("&cGetting today's online players"));
 				ArrayList<String> msg = new ArrayList<String>();
 				msg.add("&cName : Last Online");
-				for (User user : onlineToday) {
-					LocalDateTime lastOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(user.getLastOnline()),
+				for (Entry<User, Long> entry : plugin.getOnlineToday().entrySet()) {
+					LocalDateTime lastOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(entry.getValue()),
 							ZoneId.systemDefault());
-					msg.add("&f" + user.getPlayerName() + " : "
+					msg.add("&f" + entry.getKey().getPlayerName() + " : "
 							+ lastOnline.format(new DateTimeFormatterBuilder().appendLiteral("HH:mm").toFormatter()));
 				}
 

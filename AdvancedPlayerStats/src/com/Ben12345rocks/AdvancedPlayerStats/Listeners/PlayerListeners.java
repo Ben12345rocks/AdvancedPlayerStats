@@ -39,6 +39,7 @@ public class PlayerListeners implements Listener {
 			public void run() {
 				Player player = event.getPlayer();
 				if (player != null) {
+					plugin.setUpdate(true);
 					// User user =
 					// plugin.getUserManager().getAdvancedPlayerStatsUser(player);
 					// user.updateLastOnline();
@@ -57,6 +58,7 @@ public class PlayerListeners implements Listener {
 
 				@Override
 				public void run() {
+					plugin.setUpdate(true);
 					// User user =
 					// plugin.getUserManager().getAdvancedPlayerStatsUser(new
 					// UUID(uuid));

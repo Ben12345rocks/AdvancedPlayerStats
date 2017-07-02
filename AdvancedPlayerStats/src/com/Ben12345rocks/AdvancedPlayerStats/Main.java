@@ -2,8 +2,17 @@ package com.Ben12345rocks.AdvancedPlayerStats;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +25,7 @@ import com.Ben12345rocks.AdvancedPlayerStats.Commands.CommandLoader;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.Executor.CommandAdvancedPlayerStats;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.TabComplete.AdvancedPlayerStatsTabCompleter;
 import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerListeners;
+import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
 /**
@@ -25,7 +35,9 @@ public class Main extends JavaPlugin {
 
 	public static Main plugin;
 	public ArrayList<CommandHandler> commands;
-
+	private HashMap<User, Long> onlineToday;
+	private boolean update = false;
+	
 	/**
 	 * Debug.
 	 *
@@ -77,7 +89,39 @@ public class Main extends JavaPlugin {
 		registerCommands();
 		metrics();
 
+		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				if (update) {
+					update();
+					update = false;
+				}
+			}
+		}, 1000, 1000 * 60 * 3);
+
 		plugin.getLogger().info("Enabled AdvancedPlayerStats " + plugin.getDescription().getVersion());
+	}
+
+	/**
+	 * @return the onlineToday
+	 */
+	public HashMap<User, Long> getOnlineToday() {
+		return onlineToday;
+	}
+
+	/**
+	 * @return the update
+	 */
+	public boolean isUpdate() {
+		return update;
+	}
+
+	/**
+	 * @param update the update to set
+	 */
+	public void setUpdate(boolean update) {
+		this.update = update;
 	}
 
 	public UserManager getUserManager() {
@@ -98,7 +142,43 @@ public class Main extends JavaPlugin {
 		getCommand("advancedplayerstats").setTabCompleter(new AdvancedPlayerStatsTabCompleter());
 
 		plugin.debug("Loaded Commands");
+	}
 
+	public synchronized void update() {
+		onlineToday = new LinkedHashMap<User, Long>();
+		for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+			User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
+			if (user.wasOnlineToday()) {
+				onlineToday.put(user, user.getLastOnline());
+			}
+		}
+		onlineToday = sortByValuesLong(onlineToday, false);
+	}
+
+	private HashMap<User, Long> sortByValuesLong(HashMap<User, Long> unsortMap, final boolean order) {
+
+		List<Entry<User, Long>> list = new LinkedList<Entry<User, Long>>(unsortMap.entrySet());
+
+		// Sorting the list based on values
+		Collections.sort(list, new Comparator<Entry<User, Long>>() {
+			@Override
+			public int compare(Entry<User, Long> o1, Entry<User, Long> o2) {
+				if (order) {
+					return o1.getValue().compareTo(o2.getValue());
+				} else {
+					return o2.getValue().compareTo(o1.getValue());
+
+				}
+			}
+		});
+
+		// Maintaining insertion order with the help of LinkedList
+		HashMap<User, Long> sortedMap = new LinkedHashMap<User, Long>();
+		for (Entry<User, Long> entry : list) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+
+		return sortedMap;
 	}
 
 }
