@@ -8,9 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
-import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
 
 public class PlayerListeners implements Listener {
 
@@ -41,8 +39,10 @@ public class PlayerListeners implements Listener {
 			public void run() {
 				Player player = event.getPlayer();
 				if (player != null) {
-					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
-					user.updateLastOnline();
+					// User user =
+					// plugin.getUserManager().getAdvancedPlayerStatsUser(player);
+					// user.updateLastOnline();
+					// user.checkFirstJoin();
 				}
 			}
 		}, 10l);
@@ -52,13 +52,15 @@ public class PlayerListeners implements Listener {
 	public void onPlayerLogOff(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		if (player != null) {
-			String uuid = player.getUniqueId().toString();
+			// String uuid = player.getUniqueId().toString();
 			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
 				@Override
 				public void run() {
-					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(new UUID(uuid));
-					user.updateLastOnline();
+					// User user =
+					// plugin.getUserManager().getAdvancedPlayerStatsUser(new
+					// UUID(uuid));
+					// user.updateLastOnline();
 				}
 			}, 10l);
 		}

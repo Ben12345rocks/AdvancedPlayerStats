@@ -1,5 +1,7 @@
 package com.Ben12345rocks.AdvancedPlayerStats.Users;
 
+import java.util.ArrayList;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -38,5 +40,9 @@ public class UserManager {
 	@SuppressWarnings("deprecation")
 	public User getAdvancedPlayerStatsUser(UUID uuid) {
 		return new User(uuid);
+	}
+	
+	public ArrayList<String> getAllUUIDs() {
+		return com.Ben12345rocks.AdvancedCore.UserManager.UserManager.getInstance().getAllUUIDs();
 	}
 }

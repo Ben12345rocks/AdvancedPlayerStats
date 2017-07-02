@@ -1,5 +1,9 @@
 package com.Ben12345rocks.AdvancedPlayerStats.Users;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import org.bukkit.entity.Player;
 
 import com.Ben12345rocks.AdvancedCore.Objects.UUID;
@@ -59,14 +63,19 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 	}
 
 	public long getLastOnline() {
-		return Long.valueOf(getData().getString("LastOnline"));
+		return getOfflinePlayer().getLastPlayed();
 	}
 
-	public void setLastOnline(long login) {
-		getData().setString("LastOnline", "" + login);
+	public long getFirstJoin() {
+		return getOfflinePlayer().getFirstPlayed();
 	}
 
-	public void updateLastOnline() {
-		setLastOnline(System.currentTimeMillis());
+	public boolean wasOnlineToday() {
+		LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(getLastOnline()), ZoneId.systemDefault());
+		LocalDateTime now = LocalDateTime.now();
+		if (date.getDayOfMonth() == now.getDayOfMonth()) {
+			return true;
+		}
+		return false;
 	}
 }

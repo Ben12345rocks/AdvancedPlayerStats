@@ -72,6 +72,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		plugin = this;
 
+		AdvancedCoreHook.getInstance().loadHook(plugin);
 		registerEvents();
 		registerCommands();
 		metrics();
@@ -95,7 +96,6 @@ public class Main extends JavaPlugin {
 
 		getCommand("advancedplayerstats").setExecutor(new CommandAdvancedPlayerStats());
 		getCommand("advancedplayerstats").setTabCompleter(new AdvancedPlayerStatsTabCompleter());
-
 
 		plugin.debug("Loaded Commands");
 
