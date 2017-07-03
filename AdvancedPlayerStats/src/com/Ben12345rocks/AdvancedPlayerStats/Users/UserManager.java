@@ -41,8 +41,19 @@ public class UserManager {
 	public User getAdvancedPlayerStatsUser(UUID uuid) {
 		return new User(uuid);
 	}
-	
+
 	public ArrayList<String> getAllUUIDs() {
 		return com.Ben12345rocks.AdvancedCore.UserManager.UserManager.getInstance().getAllUUIDs();
+	}
+
+	public ArrayList<User> getMatchedIps(User user) {
+		ArrayList<User> matched = new ArrayList<User>();
+		for (String uuid : UserManager.getInstance().getAllUUIDs()) {
+			User user1 = UserManager.getInstance().getAdvancedPlayerStatsUser(new UUID(uuid));
+			if (user1.getIPAddress().equals(user.getIPAddress())) {
+				matched.add(user1);
+			}
+		}
+		return matched;
 	}
 }

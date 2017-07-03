@@ -78,4 +78,12 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 		}
 		return false;
 	}
+
+	public void setIPAddress(String address) {
+		getData().setString("Address", address);
+	}
+
+	public String getIPAddress() {
+		return getData().getString("Address");
+	}
 }

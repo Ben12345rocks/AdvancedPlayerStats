@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 import org.bukkit.command.CommandSender;
 
 import com.Ben12345rocks.AdvancedCore.Objects.CommandHandler;
-import com.Ben12345rocks.AdvancedCore.Util.Misc.ArrayUtils;
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
+import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -58,7 +58,8 @@ public class CommandLoader {
 
 			@Override
 			public void execute(CommandSender sender, String[] args) {
-			//	sender.sendMessage(StringUtils.getInstance().colorize("&cGetting today's online players"));
+				// sender.sendMessage(StringUtils.getInstance().colorize("&cGetting
+				// today's online players"));
 				ArrayList<String> msg = new ArrayList<String>();
 				msg.add("&cName : Last Online");
 				for (Entry<User, Long> entry : plugin.getOnlineToday().entrySet()) {
@@ -68,8 +69,30 @@ public class CommandLoader {
 							+ lastOnline.format(new DateTimeFormatterBuilder().appendLiteral("HH:mm").toFormatter()));
 				}
 
-				sender.sendMessage(ArrayUtils.getInstance().convert(ArrayUtils.getInstance().colorize(msg)));
+				sendMessage(sender, msg);
 
+			}
+		});
+
+		plugin.commands.add(new CommandHandler(new String[] { "Alts", "(player)" }, "AdvancedPlayerStats.Alts",
+				"Check for player alts") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				sendMessage(sender, "&cLooking for possible alts...");
+				ArrayList<User> matched = plugin.getUserManager()
+						.getMatchedIps(UserManager.getInstance().getAdvancedPlayerStatsUser(args[1]));
+				ArrayList<String> msg = new ArrayList<String>();
+				if (matched.size() > 0) {
+					msg.add("&cPossible alt accounts (According to matching ips):");
+					for (User user : matched) {
+						msg.add("&c" + user.getPlayerName());
+					}
+				} else {
+					msg.add("&cNo alt accounts found");
+				}
+
+				sendMessage(sender, msg);
 			}
 		});
 

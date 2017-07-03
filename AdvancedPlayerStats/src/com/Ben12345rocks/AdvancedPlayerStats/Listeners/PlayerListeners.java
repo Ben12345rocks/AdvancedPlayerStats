@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
+import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
+import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
 public class PlayerListeners implements Listener {
 
@@ -40,10 +42,11 @@ public class PlayerListeners implements Listener {
 				Player player = event.getPlayer();
 				if (player != null) {
 					plugin.setUpdate(true);
-					// User user =
-					// plugin.getUserManager().getAdvancedPlayerStatsUser(player);
-					// user.updateLastOnline();
-					// user.checkFirstJoin();
+					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
+					user.setIPAddress(event.getAddress().getHostAddress());
+					if (UserManager.getInstance().getMatchedIps(user).size() > 0) {
+						plugin.getLogger().info("Detected possible alt accounts for " + player.getName());
+					}
 				}
 			}
 		}, 10l);
