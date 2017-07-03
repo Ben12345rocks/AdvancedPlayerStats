@@ -1,8 +1,10 @@
 package com.Ben12345rocks.AdvancedPlayerStats.Users;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import org.bukkit.entity.Player;
 
@@ -85,5 +87,42 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 
 	public String getIPAddress() {
 		return getData().getString("Address");
+	}
+
+	public long getOntime() {
+		return valueOf(getData().getString("Ontime"));
+	}
+
+	public void setOntime(long time) {
+		getData().setString("Ontime", "" + time);
+	}
+
+	public void updateLoginTime() {
+		setLoginTime(System.currentTimeMillis());
+	}
+
+	public void setLoginTime(long time) {
+		getData().setString("LoginTime", "" + time);
+	}
+
+	public long getLoginTime() {
+		return valueOf(getData().getString("LoginTime"));
+	}
+
+	private long valueOf(String str) {
+		if (str.equals("")) {
+			return 0;
+		}
+		return Long.valueOf(str);
+	}
+
+	public void updateOntime() {
+		long login = getLoginTime();
+		if (login > 0) {
+			long cur = System.currentTimeMillis();
+			Duration dur = Duration.of(cur - login, ChronoUnit.MILLIS);
+			setOntime(Duration.of(getOntime(), ChronoUnit.MILLIS).plus(dur).toMillis());
+			setLoginTime(0);
+		}
 	}
 }

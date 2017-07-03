@@ -50,7 +50,8 @@ public class UserManager {
 		ArrayList<User> matched = new ArrayList<User>();
 		for (String uuid : UserManager.getInstance().getAllUUIDs()) {
 			User user1 = UserManager.getInstance().getAdvancedPlayerStatsUser(new UUID(uuid));
-			if (user1.getIPAddress().equals(user.getIPAddress())) {
+			if (user1.getIPAddress().equals(user.getIPAddress())
+					&& !user1.getPlayerName().equals(user.getPlayerName())) {
 				matched.add(user1);
 			}
 		}

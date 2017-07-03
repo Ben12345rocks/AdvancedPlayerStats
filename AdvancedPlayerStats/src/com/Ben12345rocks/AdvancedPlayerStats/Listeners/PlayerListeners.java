@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
@@ -44,6 +45,7 @@ public class PlayerListeners implements Listener {
 					plugin.setUpdate(true);
 					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
 					user.setIPAddress(event.getAddress().getHostAddress());
+					user.updateLoginTime();
 					if (UserManager.getInstance().getMatchedIps(user).size() > 0) {
 						plugin.getLogger().info("Detected possible alt accounts for " + player.getName());
 					}
@@ -56,16 +58,14 @@ public class PlayerListeners implements Listener {
 	public void onPlayerLogOff(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		if (player != null) {
-			// String uuid = player.getUniqueId().toString();
+			final String uuid = player.getUniqueId().toString();
 			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
 				@Override
 				public void run() {
 					plugin.setUpdate(true);
-					// User user =
-					// plugin.getUserManager().getAdvancedPlayerStatsUser(new
-					// UUID(uuid));
-					// user.updateLastOnline();
+					User user = plugin.getUserManager().getAdvancedPlayerStatsUser(new UUID(uuid));
+					user.updateOntime();
 				}
 			}, 10l);
 		}

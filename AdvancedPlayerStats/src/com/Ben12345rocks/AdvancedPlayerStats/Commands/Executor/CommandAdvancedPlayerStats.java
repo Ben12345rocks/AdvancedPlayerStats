@@ -39,7 +39,7 @@ public class CommandAdvancedPlayerStats implements CommandExecutor {
 		}
 
 		// invalid command
-		sender.sendMessage(ChatColor.RED + "No valid arguments, see /mcperks help!");
+		sender.sendMessage(ChatColor.RED + "No valid arguments, see /advancedplayerstats help!");
 
 		return true;
 	}

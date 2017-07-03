@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.Ben12345rocks.AdvancedCore.AdvancedCoreHook;
 import com.Ben12345rocks.AdvancedCore.Objects.CommandHandler;
+import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.BStatsMetrics;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.MCStatsMetrics;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.CommandLoader;
@@ -37,7 +38,7 @@ public class Main extends JavaPlugin {
 	public ArrayList<CommandHandler> commands;
 	private HashMap<User, Long> onlineToday;
 	private boolean update = false;
-	
+
 	/**
 	 * Debug.
 	 *
@@ -71,6 +72,10 @@ public class Main extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
+		for (String uuid : UserManager.getInstance().getAllUUIDs()) {
+			User user = UserManager.getInstance().getAdvancedPlayerStatsUser(new UUID(uuid));
+			user.updateOntime();
+		}
 		HandlerList.unregisterAll(plugin);
 		plugin = null;
 	}
@@ -89,6 +94,7 @@ public class Main extends JavaPlugin {
 		registerCommands();
 		metrics();
 
+		update = true;
 		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
 
 			@Override
@@ -98,7 +104,7 @@ public class Main extends JavaPlugin {
 					update = false;
 				}
 			}
-		}, 1000, 1000 * 60 * 3);
+		}, 0, 1000 * 60 * 3);
 
 		plugin.getLogger().info("Enabled AdvancedPlayerStats " + plugin.getDescription().getVersion());
 	}
@@ -118,7 +124,8 @@ public class Main extends JavaPlugin {
 	}
 
 	/**
-	 * @param update the update to set
+	 * @param update
+	 *            the update to set
 	 */
 	public void setUpdate(boolean update) {
 		this.update = update;
@@ -137,9 +144,16 @@ public class Main extends JavaPlugin {
 
 	private void registerCommands() {
 		CommandLoader.getInstance().loadCommands();
-
-		getCommand("advancedplayerstats").setExecutor(new CommandAdvancedPlayerStats());
-		getCommand("advancedplayerstats").setTabCompleter(new AdvancedPlayerStatsTabCompleter());
+		ArrayList<String> cmds = new ArrayList<String>();
+		cmds.add("advancedplayerstats");
+		cmds.add("aps");
+		cmds.add("advancedps");
+		cmds.add("playerstats");
+		cmds.add("ps");
+		for (String cmd : cmds) {
+			getCommand(cmd).setExecutor(new CommandAdvancedPlayerStats());
+			getCommand(cmd).setTabCompleter(new AdvancedPlayerStatsTabCompleter());
+		}
 
 		plugin.debug("Loaded Commands");
 	}

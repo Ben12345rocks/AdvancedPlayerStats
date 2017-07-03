@@ -6,4 +6,11 @@ main: com.Ben12345rocks.AdvancedPlayerStats.Main
 commands:
   advancedplayerstats:
     description: Main command
-    aliases: [aps,advancedps,playerstats,ps]
+  aps:
+    description: Main command
+  advancedps:
+    description: Main command
+  playerstats:
+    description: Main command
+  ps:
+    description: Main command

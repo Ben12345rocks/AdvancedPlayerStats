@@ -21,19 +21,9 @@ public class AdvancedPlayerStatsTabCompleter implements TabCompleter {
 
 	/** The plugin. */
 	Main plugin = Main.plugin;
-
-	/**
-	 * Gets the admin tab complete options.
-	 *
-	 * @param sender
-	 *            the sender
-	 * @param args
-	 *            the args
-	 * @param argNum
-	 *            the arg num
-	 * @return the admin tab complete options
-	 */
-	public ArrayList<String> getAdminTabCompleteOptions(CommandSender sender, String[] args, int argNum) {
+	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
 		ArrayList<String> tab = new ArrayList<String>();
 
 		Set<String> cmds = new HashSet<String>();
@@ -51,37 +41,6 @@ public class AdvancedPlayerStatsTabCompleter implements TabCompleter {
 		Collections.sort(tab, String.CASE_INSENSITIVE_ORDER);
 
 		return tab;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.bukkit.command.TabCompleter#onTabComplete(org.bukkit.command.
-	 * CommandSender, org.bukkit.command.Command, java.lang.String,
-	 * java.lang.String[])
-	 */
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-
-		if (cmd.getName().equalsIgnoreCase("mcperks")) {
-
-			List<String> tab = new ArrayList<String>();
-
-			ArrayList<String> cmds = new ArrayList<String>();
-
-			cmds.addAll(getAdminTabCompleteOptions(sender, args, args.length - 1));
-
-			for (int i = 0; i < cmds.size(); i++) {
-				if (StringUtils.getInstance().startsWithIgnoreCase(cmds.get(i), args[args.length - 1])) {
-					tab.add(cmds.get(i));
-				}
-			}
-
-			return tab;
-
-		}
-
-		return null;
 	}
 
 }
