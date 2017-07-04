@@ -268,7 +268,7 @@ public class Main extends JavaPlugin {
 			}
 		}
 		onlineToday = sortByValuesLong(onlineToday, false);
-		ontimeTop = sortByValuesLong(ontimeTop, true);
+		ontimeTop = sortByValuesLong(ontimeTop, false);
 
 		debug("Background task ran");
 	}

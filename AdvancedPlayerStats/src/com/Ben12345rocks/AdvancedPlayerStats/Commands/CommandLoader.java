@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -20,6 +22,7 @@ import com.Ben12345rocks.AdvancedPlayerStats.Main;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
+import me.edge209.OnTime.OnTimeAPI;
 import net.md_5.bungee.api.chat.TextComponent;
 
 // TODO: Auto-generated Javadoc
@@ -143,13 +146,56 @@ public class CommandLoader {
 						msg.add("&cTop Ontime:");
 						int i = 1;
 						for (Entry<User, Long> entry : plugin.getOntimeTop().entrySet()) {
-							msg.add("&c" + i + ": " + entry.getKey().getOntimeString() + " &c&l"
-									+ entry.getKey().getPlayerName());
-							i++;
+							if (i <= 10) {
+								msg.add("&c" + i + ": " + entry.getKey().getOntimeString() + " &c&l"
+										+ entry.getKey().getPlayerName());
+								i++;
+							}
 						}
 						sendMessage(sender, msg);
 					}
 				});
+
+		plugin.commands.add(new CommandHandler(new String[] { "OntimeTop", "(Number)" }, "AdvancedPlayerStats.OnimeTop",
+				"See Top Ontimes") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				ArrayList<String> msg = new ArrayList<String>();
+				int page = Integer.parseInt(args[1]);
+				msg.add("&cTop Ontime (Page " + page + "):");
+				int i = 1;
+				for (Entry<User, Long> entry : plugin.getOntimeTop().entrySet()) {
+					if (i <= page * 10 && i > (page - 1) * 10) {
+						msg.add("&c" + i + ": " + entry.getKey().getOntimeString() + " &c&l"
+								+ entry.getKey().getPlayerName());
+
+					}
+					i++;
+				}
+				sendMessage(sender, msg);
+			}
+		});
+
+		plugin.commands.add(new CommandHandler(new String[] { "ConvertFrom", "Ontime" }, "AdvancedPlayerStats.Convert",
+				"Convert from Ontime") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				if (Bukkit.getPluginManager().getPlugin("OnTime") != null) {
+					for (OfflinePlayer offPlayer : Bukkit.getOfflinePlayers()) {
+						if (OnTimeAPI.playerHasOnTimeRecord(offPlayer.getName())) {
+							User user = UserManager.getInstance().getAdvancedPlayerStatsUser(offPlayer.getName());
+							user.setOntime(OnTimeAPI.getPlayerTimeData(offPlayer.getName(), OnTimeAPI.data.TOTALPLAY));
+						}
+					}
+					sendMessage(sender, "&cFinished converting");
+					plugin.setUpdate(true);
+				} else {
+					sendMessage(sender, "&cOnTime needs to be enabled");
+				}
+			}
+		});
 
 		plugin.commands.add(new CommandHandler(new String[] { "Ontime", "(player)" }, "AdvancedPlayerStats.Onime.Other",
 				"Check other player ontime") {
