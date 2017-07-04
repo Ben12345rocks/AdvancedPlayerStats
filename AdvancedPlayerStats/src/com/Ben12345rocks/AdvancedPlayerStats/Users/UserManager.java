@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.Ben12345rocks.AdvancedCore.Objects.UUID;
-import com.Ben12345rocks.AdvancedCore.Util.Misc.PlayerUtils;
 
 public class UserManager {
 	/** The instance. */
@@ -33,8 +32,9 @@ public class UserManager {
 		return getAdvancedPlayerStatsUser(player.getName());
 	}
 
+	@SuppressWarnings("deprecation")
 	public User getAdvancedPlayerStatsUser(String playerName) {
-		return getAdvancedPlayerStatsUser(new UUID(PlayerUtils.getInstance().getUUID(playerName)));
+		return new User(playerName);
 	}
 
 	@SuppressWarnings("deprecation")
