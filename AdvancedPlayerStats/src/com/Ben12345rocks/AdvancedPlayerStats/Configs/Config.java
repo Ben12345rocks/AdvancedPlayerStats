@@ -99,6 +99,26 @@ public class Config extends YMLFile {
 		return getData().getString("Format.NoPerms", "&cYou do not have enough permission!");
 	}
 
+	public Set<String> getOntimeRewardsEach() {
+		return getData().getConfigurationSection("OntimeRewardsEach").getKeys(false);
+	}
+
+	private ConfigurationSection getOntimeRewardsEach(int reward) {
+		return getData().getConfigurationSection("OntimeRewards." + reward);
+	}
+
+	public boolean getOntimeRewardsEachEnabled(int reward) {
+		return getOntimeRewardsEach(reward).getBoolean("Enabled");
+	}
+
+	public String getOntimeRewardsEachTimeType(int reward) {
+		return getOntimeRewardsEach(reward).getString("TimeType", "HOURS");
+	}
+
+	public String getOntimeRewardsEachPath(int reward) {
+		return getOntimeRewardsEach(reward).getConfigurationSection("Rewards").getCurrentPath();
+	}
+
 	public String getFormatNotNumber() {
 		return getData().getString("Format.NotNumber", "&cError on &6%arg%&c, number expected!");
 	}

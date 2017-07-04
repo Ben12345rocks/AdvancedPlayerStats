@@ -47,6 +47,7 @@ public class Main extends JavaPlugin {
 	private boolean update = false;
 	private Config pluginConfig;
 	private ArrayList<OntimeReward> ontimeRewards;
+	private ArrayList<OntimeReward> ontimeRewardsEach;
 
 	/**
 	 * @return the ontimeRewards
@@ -153,6 +154,25 @@ public class Main extends JavaPlugin {
 				}
 			}
 		}
+
+		ontimeRewardsEach = new ArrayList<OntimeReward>();
+		for (String str : Config.getInstance().getOntimeRewardsEach()) {
+			if (StringUtils.getInstance().isInt(str)) {
+				int reward = Integer.parseInt(str);
+				if (Config.getInstance().getOntimeRewardsEachEnabled(reward)) {
+					ontimeRewardsEach.add(new OntimeReward(reward,
+							OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardsEachTimeType(reward)),
+							Config.getInstance().getOntimeRewardsEachPath(reward)));
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return the ontimeRewardsEach
+	 */
+	public ArrayList<OntimeReward> getOntimeRewardsEach() {
+		return ontimeRewardsEach;
 	}
 
 	private void loadFiles() {
@@ -231,7 +251,7 @@ public class Main extends JavaPlugin {
 			}
 		}
 		onlineToday = sortByValuesLong(onlineToday, false);
-		
+
 		debug("Background task ran");
 	}
 

@@ -8,7 +8,7 @@ public class OntimeReward {
 	private int time;
 	private OntimeAchivement timeType;
 	private String rewardPath;
-
+	
 	public OntimeReward(int time, OntimeAchivement timeType, String rewardPath) {
 		this.time = time;
 		this.timeType = timeType;

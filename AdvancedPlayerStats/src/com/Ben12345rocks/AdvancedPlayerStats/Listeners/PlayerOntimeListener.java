@@ -37,6 +37,14 @@ public class PlayerOntimeListener implements Listener {
 				}
 			}
 		}
+
+		for (OntimeReward reward : plugin.getOntimeRewardsEach()) {
+			if (reward.getTimeType().equals(event.getAchivement())) {
+				if (event.getTime() % reward.getTime() == 0) {
+					reward.giveReward(event.getUser());
+				}
+			}
+		}
 	}
 
 }
