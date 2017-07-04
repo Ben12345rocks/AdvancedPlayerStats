@@ -18,10 +18,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.Ben12345rocks.AdvancedCore.AdvancedCoreHook;
+import com.Ben12345rocks.AdvancedCore.Data.ServerData;
 import com.Ben12345rocks.AdvancedCore.Objects.CommandHandler;
 import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedCore.Objects.UserStorage;
 import com.Ben12345rocks.AdvancedCore.Thread.Thread;
+import com.Ben12345rocks.AdvancedCore.TimeChecker.TimeChecker;
+import com.Ben12345rocks.AdvancedCore.TimeChecker.TimeType;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.BStatsMetrics;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.MCStatsMetrics;
 import com.Ben12345rocks.AdvancedCore.Util.Misc.StringUtils;
@@ -30,6 +33,7 @@ import com.Ben12345rocks.AdvancedPlayerStats.Commands.CommandLoader;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.Executor.CommandAdvancedPlayerStats;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.TabComplete.AdvancedPlayerStatsTabCompleter;
 import com.Ben12345rocks.AdvancedPlayerStats.Configs.Config;
+import com.Ben12345rocks.AdvancedPlayerStats.Listeners.DayChangeListener;
 import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerListeners;
 import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerOntimeListener;
 import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeAchivement;
@@ -45,6 +49,7 @@ public class Main extends JavaPlugin {
 	public static Main plugin;
 	public ArrayList<CommandHandler> commands;
 	private HashMap<User, Long> onlineToday;
+	private HashMap<User, Long> onlineYesterday;
 	private boolean update = false;
 	private Config pluginConfig;
 	private ArrayList<OntimeReward> ontimeRewards;
@@ -109,6 +114,7 @@ public class Main extends JavaPlugin {
 		plugin = this;
 
 		onlineToday = new LinkedHashMap<User, Long>();
+		onlineYesterday = new LinkedHashMap<User, Long>();
 		ontimeTop = new LinkedHashMap<User, Long>();
 
 		loadFiles();
@@ -235,6 +241,7 @@ public class Main extends JavaPlugin {
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new PlayerListeners(this), plugin);
 		pm.registerEvents(new PlayerOntimeListener(this), plugin);
+		pm.registerEvents(new DayChangeListener(this), plugin);
 
 		debug("Loaded Events");
 	}
@@ -255,22 +262,49 @@ public class Main extends JavaPlugin {
 		plugin.debug("Loaded Commands");
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized void update() {
+		debug("Starting background task");
 		onlineToday = new LinkedHashMap<User, Long>();
 		ontimeTop = new LinkedHashMap<User, Long>();
+		ArrayList<String> onlineTodayUuids = (ArrayList<String>) ServerData.getInstance().getData()
+				.getList("OnlineToday", new ArrayList<String>());
+		if (TimeChecker.getInstance().hasDayChanged()) {
+			TimeChecker.getInstance().forceChanged(TimeType.DAY);
+		}
+		onlineTodayUuids.clear();
+		ArrayList<User> users = new ArrayList<User>();
 		for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
 			User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
 			if (user.wasOnlineToday()) {
 				onlineToday.put(user, user.getLastOnline());
+				onlineTodayUuids.add(user.getUUID());
 			}
 			if (user.getOntime() > 0) {
 				ontimeTop.put(user, user.getOntime());
 			}
+			users.add(user);
 		}
 		onlineToday = sortByValuesLong(onlineToday, false);
 		ontimeTop = sortByValuesLong(ontimeTop, false);
+		ServerData.getInstance().setData("OnlineToday", onlineTodayUuids);
+
+		onlineYesterday = new HashMap<User, Long>();
+		for (User user : users) {
+			if (user.wasOnlineYesterday()) {
+				onlineYesterday.put(user, user.getLastOnline());
+			}
+		}
+		onlineYesterday = sortByValuesLong(onlineYesterday, false);
 
 		debug("Background task ran");
+	}
+
+	/**
+	 * @return the onlineYesterday
+	 */
+	public HashMap<User, Long> getOnlineYesterday() {
+		return onlineYesterday;
 	}
 
 	/**

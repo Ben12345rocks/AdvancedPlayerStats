@@ -99,6 +99,30 @@ public class CommandLoader {
 			}
 		});
 
+		plugin.commands.add(new CommandHandler(new String[] { "Yesterday" }, "AdvancedPlayerStats.Yesterday",
+				"See whose been online yesterday") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				// sender.sendMessage(StringUtils.getInstance().colorize("&cGetting
+				// today's online players"));
+				ArrayList<String> msg = new ArrayList<String>();
+				msg.add("&cName : Last Seen (" + plugin.getOnlineToday().size() + " Yesterday)");
+				for (Entry<User, Long> entry : plugin.getOnlineYesterday().entrySet()) {
+					LocalDateTime lastOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(entry.getValue()),
+							ZoneId.systemDefault());
+					Duration dur = Duration.between(lastOnline, LocalDateTime.now());
+					long hours = dur.toHours();
+					long mins = dur.toMinutes() - (hours * 60);
+					msg.add("&f" + entry.getKey().getPlayerName() + " : " + hours + " hours and " + mins
+							+ " minutes ago");
+				}
+
+				sendMessage(sender, msg);
+
+			}
+		});
+
 		plugin.commands.add(new CommandHandler(new String[] { "Alts", "(player)" }, "AdvancedPlayerStats.Alts",
 				"Check for player alts") {
 

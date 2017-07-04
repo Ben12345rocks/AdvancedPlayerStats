@@ -130,20 +130,20 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 			setOntime(Duration.of(getOntime(), ChronoUnit.MILLIS).plus(dur).toMillis());
 			Duration newOntime = Duration.of(getOntime(), ChronoUnit.MILLIS);
 			if (currentOntime.toHours() != newOntime.toHours()) {
-			//	plugin.debug("Hour");
+				// plugin.debug("Hour");
 				for (int i = (int) (currentOntime.toHours() + 1); i <= newOntime.toHours(); i++) {
 					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.HOURS,
 							i);
 					Bukkit.getPluginManager().callEvent(event);
-				//	plugin.debug("H: " + i);
+					// plugin.debug("H: " + i);
 				}
 			}
 			if (currentOntime.toDays() != newOntime.toDays()) {
-			//	plugin.debug("Day");
+				// plugin.debug("Day");
 				for (int i = (int) (currentOntime.toDays() + 1); i <= newOntime.toDays(); i++) {
 					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.DAYS, i);
 					Bukkit.getPluginManager().callEvent(event);
-					//plugin.debug("Days: " + i);
+					// plugin.debug("Days: " + i);
 				}
 			}
 			if (isOnline()) {
@@ -166,5 +166,13 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 		} else {
 			return "&c" + minutes + " Minutes";
 		}
+	}
+
+	public boolean wasOnlineYesterday() {
+		return Boolean.valueOf(getData().getString("OnlineYesterday"));
+	}
+
+	public void setOnlineYesterday(boolean value) {
+		getData().setString("OnlineYesterday", "" + value);
 	}
 }
