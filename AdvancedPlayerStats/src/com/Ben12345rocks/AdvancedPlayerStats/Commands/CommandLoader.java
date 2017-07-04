@@ -125,13 +125,29 @@ public class CommandLoader {
 					public void execute(CommandSender sender, String[] args) {
 						Player player = (Player) sender;
 						User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
-						Duration dur = Duration.of(user.getOntime(), ChronoUnit.MILLIS);
+
 						ArrayList<String> msg = new ArrayList<String>();
 						msg.add("&cYour Ontime");
-						msg.add("&c" + dur.toDays() + " Days " + (dur.toHours() - (dur.toDays() * 24)) + " Hours "
-								+ (dur.toMinutes() - (dur.toHours() * 60)) + " Minutes");
+						msg.add(user.getOntimeString());
 						sendMessage(sender, msg);
 
+					}
+				});
+
+		plugin.commands.add(
+				new CommandHandler(new String[] { "OntimeTop" }, "AdvancedPlayerStats.OnimeTop", "See Top Ontimes") {
+
+					@Override
+					public void execute(CommandSender sender, String[] args) {
+						ArrayList<String> msg = new ArrayList<String>();
+						msg.add("&cTop Ontime:");
+						int i = 1;
+						for (Entry<User, Long> entry : plugin.getOntimeTop().entrySet()) {
+							msg.add("&c" + i + ": " + entry.getKey().getOntimeString() + " &c&l"
+									+ entry.getKey().getPlayerName());
+							i++;
+						}
+						sendMessage(sender, msg);
 					}
 				});
 

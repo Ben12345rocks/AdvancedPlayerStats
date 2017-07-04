@@ -37,7 +37,6 @@ OntimeRewards:
     Enabled: false
     # Valid options: HOURS, DAYS
     TimeType: 'HOURS'
-    RewardEach: false
     Rewards:
       Messages:
         Player: 'You played for %time% %timetype%'  

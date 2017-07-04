@@ -30,6 +30,7 @@ public class PlayerOntimeListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerOntime(PlayerOntimeAchivementEvent event) {
+		//plugin.debug("Event: " + event.getUser().getPlayerName() + ", " + event.getAchivement().getText() + ", " + event.getTime());
 		for (OntimeReward reward : plugin.getOntimeRewards()) {
 			if (reward.getTimeType().equals(event.getAchivement())) {
 				if (reward.getTime() == event.getTime()) {

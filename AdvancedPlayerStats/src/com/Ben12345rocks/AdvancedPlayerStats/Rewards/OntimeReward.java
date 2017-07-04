@@ -8,7 +8,7 @@ public class OntimeReward {
 	private int time;
 	private OntimeAchivement timeType;
 	private String rewardPath;
-	
+
 	public OntimeReward(int time, OntimeAchivement timeType, String rewardPath) {
 		this.time = time;
 		this.timeType = timeType;
@@ -38,7 +38,8 @@ public class OntimeReward {
 
 	public void giveReward(User user) {
 		new RewardBuilder(Config.getInstance().getData(), rewardPath).withPlaceHolder("time", "" + time)
-				.withPlaceHolder("timetype", timeType.getText()).send(user);
+				.withPlaceHolder("timetype", timeType.getText()).withPlaceHolder("ontime", user.getOntimeString())
+				.send(user);
 	}
 
 }

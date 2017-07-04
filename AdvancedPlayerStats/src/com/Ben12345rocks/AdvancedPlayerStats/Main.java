@@ -31,6 +31,7 @@ import com.Ben12345rocks.AdvancedPlayerStats.Commands.Executor.CommandAdvancedPl
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.TabComplete.AdvancedPlayerStatsTabCompleter;
 import com.Ben12345rocks.AdvancedPlayerStats.Configs.Config;
 import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerListeners;
+import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerOntimeListener;
 import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeAchivement;
 import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeReward;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
@@ -48,6 +49,7 @@ public class Main extends JavaPlugin {
 	private Config pluginConfig;
 	private ArrayList<OntimeReward> ontimeRewards;
 	private ArrayList<OntimeReward> ontimeRewardsEach;
+	private HashMap<User, Long> ontimeTop;
 
 	/**
 	 * @return the ontimeRewards
@@ -105,6 +107,9 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
+
+		onlineToday = new LinkedHashMap<User, Long>();
+		ontimeTop = new LinkedHashMap<User, Long>();
 
 		loadFiles();
 		updateAdvancedCoreHook();
@@ -229,6 +234,7 @@ public class Main extends JavaPlugin {
 	private void registerEvents() {
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new PlayerListeners(this), plugin);
+		pm.registerEvents(new PlayerOntimeListener(this), plugin);
 
 		debug("Loaded Events");
 	}
@@ -251,15 +257,27 @@ public class Main extends JavaPlugin {
 
 	public synchronized void update() {
 		onlineToday = new LinkedHashMap<User, Long>();
+		ontimeTop = new LinkedHashMap<User, Long>();
 		for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
 			User user = plugin.getUserManager().getAdvancedPlayerStatsUser(player);
 			if (user.wasOnlineToday()) {
 				onlineToday.put(user, user.getLastOnline());
 			}
+			if (user.getOntime() > 0) {
+				ontimeTop.put(user, user.getOntime());
+			}
 		}
 		onlineToday = sortByValuesLong(onlineToday, false);
+		ontimeTop = sortByValuesLong(ontimeTop, true);
 
 		debug("Background task ran");
+	}
+
+	/**
+	 * @return the ontimeTop
+	 */
+	public HashMap<User, Long> getOntimeTop() {
+		return ontimeTop;
 	}
 
 	private HashMap<User, Long> sortByValuesLong(HashMap<User, Long> unsortMap, final boolean order) {

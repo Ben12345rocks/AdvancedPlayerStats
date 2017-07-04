@@ -99,6 +99,7 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 
 	public void setOntime(long time) {
 		getData().setString("Ontime", "" + time);
+		plugin.setUpdate(true);
 	}
 
 	public void updateLoginTime() {
@@ -129,16 +130,20 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 			setOntime(Duration.of(getOntime(), ChronoUnit.MILLIS).plus(dur).toMillis());
 			Duration newOntime = Duration.of(getOntime(), ChronoUnit.MILLIS);
 			if (currentOntime.toHours() != newOntime.toHours()) {
+			//	plugin.debug("Hour");
 				for (int i = (int) (currentOntime.toHours() + 1); i <= newOntime.toHours(); i++) {
 					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.HOURS,
 							i);
 					Bukkit.getPluginManager().callEvent(event);
+				//	plugin.debug("H: " + i);
 				}
 			}
 			if (currentOntime.toDays() != newOntime.toDays()) {
+			//	plugin.debug("Day");
 				for (int i = (int) (currentOntime.toDays() + 1); i <= newOntime.toDays(); i++) {
 					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.DAYS, i);
 					Bukkit.getPluginManager().callEvent(event);
+					//plugin.debug("Days: " + i);
 				}
 			}
 			if (isOnline()) {
@@ -146,6 +151,20 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 			} else {
 				setLoginTime(0);
 			}
+		}
+	}
+
+	public String getOntimeString() {
+		Duration dur = Duration.of(getOntime(), ChronoUnit.MILLIS);
+		long days = dur.toDays();
+		long hours = (dur.toHours() - (dur.toDays() * 24));
+		long minutes = (dur.toMinutes() - (dur.toHours() * 60));
+		if (days != 0) {
+			return "&c" + days + " Days " + hours + " Hours " + minutes + " Minutes";
+		} else if (hours != 0) {
+			return "&c" + hours + " Hours " + minutes + " Minutes";
+		} else {
+			return "&c" + minutes + " Minutes";
 		}
 	}
 }
