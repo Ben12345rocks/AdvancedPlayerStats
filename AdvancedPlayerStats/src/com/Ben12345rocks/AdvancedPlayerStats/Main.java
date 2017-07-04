@@ -20,12 +20,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.Ben12345rocks.AdvancedCore.AdvancedCoreHook;
 import com.Ben12345rocks.AdvancedCore.Objects.CommandHandler;
 import com.Ben12345rocks.AdvancedCore.Objects.UUID;
+import com.Ben12345rocks.AdvancedCore.Objects.UserStorage;
+import com.Ben12345rocks.AdvancedCore.Thread.Thread;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.BStatsMetrics;
 import com.Ben12345rocks.AdvancedCore.Util.Metrics.MCStatsMetrics;
+import com.Ben12345rocks.AdvancedCore.Util.Misc.StringUtils;
+import com.Ben12345rocks.AdvancedCore.mysql.MySQL;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.CommandLoader;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.Executor.CommandAdvancedPlayerStats;
 import com.Ben12345rocks.AdvancedPlayerStats.Commands.TabComplete.AdvancedPlayerStatsTabCompleter;
+import com.Ben12345rocks.AdvancedPlayerStats.Configs.Config;
 import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerListeners;
+import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeAchivement;
+import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeReward;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.User;
 import com.Ben12345rocks.AdvancedPlayerStats.Users.UserManager;
 
@@ -38,6 +45,15 @@ public class Main extends JavaPlugin {
 	public ArrayList<CommandHandler> commands;
 	private HashMap<User, Long> onlineToday;
 	private boolean update = false;
+	private Config pluginConfig;
+	private ArrayList<OntimeReward> ontimeRewards;
+
+	/**
+	 * @return the ontimeRewards
+	 */
+	public ArrayList<OntimeReward> getOntimeRewards() {
+		return ontimeRewards;
+	}
 
 	/**
 	 * Debug.
@@ -89,10 +105,14 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		plugin = this;
 
+		loadFiles();
+		updateAdvancedCoreHook();
 		AdvancedCoreHook.getInstance().loadHook(plugin);
 		registerEvents();
 		registerCommands();
 		metrics();
+
+		loadOntimeRewards();
 
 		update = true;
 		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
@@ -107,6 +127,38 @@ public class Main extends JavaPlugin {
 		}, 0, 1000 * 60 * 3);
 
 		plugin.getLogger().info("Enabled AdvancedPlayerStats " + plugin.getDescription().getVersion());
+	}
+
+	private void loadOntimeRewards() {
+		ontimeRewards = new ArrayList<OntimeReward>();
+		for (String str : Config.getInstance().getOntimeRewards()) {
+			if (StringUtils.getInstance().isInt(str)) {
+				int reward = Integer.parseInt(str);
+				if (Config.getInstance().getOntimeRewardEnabled(reward)) {
+					ontimeRewards.add(new OntimeReward(reward,
+							OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardTimeType(reward)),
+							Config.getInstance().getOntimeRewardPath(reward)));
+				}
+			}
+		}
+	}
+
+	private void loadFiles() {
+		pluginConfig = Config.getInstance();
+		pluginConfig.setup();
+	}
+
+	/**
+	 * @return the pluginConfig
+	 */
+	public Config getPluginConfig() {
+		return pluginConfig;
+	}
+
+	public void reload() {
+		updateAdvancedCoreHook();
+		Config.getInstance().reloadData();
+		loadOntimeRewards();
 	}
 
 	/**
@@ -193,6 +245,37 @@ public class Main extends JavaPlugin {
 		}
 
 		return sortedMap;
+	}
+
+	public void updateAdvancedCoreHook() {
+		AdvancedCoreHook.getInstance().getJavascriptEngine().put("AdvancedPlayerStats", this);
+		AdvancedCoreHook.getInstance().setExtraDebug(Config.getInstance().getExtraDebug());
+		AdvancedCoreHook.getInstance().setStorageType(UserStorage.valueOf(Config.getInstance().getDataStorage()));
+		loadMySQL();
+
+		AdvancedCoreHook.getInstance().setDebug(Config.getInstance().getDebugEnabled());
+		AdvancedCoreHook.getInstance().setDebugIngame(Config.getInstance().getDebugInfoIngame());
+		AdvancedCoreHook.getInstance().setFormatNoPerms(Config.getInstance().getFormatNoPerms());
+		AdvancedCoreHook.getInstance().setFormatNotNumber(Config.getInstance().getFormatNotNumber());
+		AdvancedCoreHook.getInstance().setHelpLine(Config.getInstance().getFormatHelpLine());
+		AdvancedCoreHook.getInstance().setLogDebugToFile(Config.getInstance().getLogDebugToFile());
+	}
+
+	private void loadMySQL() {
+		if (AdvancedCoreHook.getInstance().getStorageType().equals(UserStorage.MYSQL)) {
+			Thread.getInstance().run(new Runnable() {
+
+				@Override
+				public void run() {
+					AdvancedCoreHook.getInstance()
+							.setMysql(new MySQL("AdvancedPlayerStats_Users", Config.getInstance().getMySqlHost(),
+									Config.getInstance().getMySqlPort(), Config.getInstance().getMySqlDatabase(),
+									Config.getInstance().getMySqlUsername(), Config.getInstance().getMySqlPassword(),
+									Config.getInstance().getMySqlMaxConnections()));
+				}
+			});
+
+		}
 	}
 
 }

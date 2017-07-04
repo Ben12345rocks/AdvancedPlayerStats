@@ -69,14 +69,14 @@ public class CommandLoader {
 				// sender.sendMessage(StringUtils.getInstance().colorize("&cGetting
 				// today's online players"));
 				ArrayList<String> msg = new ArrayList<String>();
-				msg.add("&cName : Last Seen");
+				msg.add("&cName : Last Seen (" + plugin.getOnlineToday().size() + " Today)");
 				for (Entry<User, Long> entry : plugin.getOnlineToday().entrySet()) {
 					LocalDateTime lastOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(entry.getValue()),
 							ZoneId.systemDefault());
 					Duration dur = Duration.between(lastOnline, LocalDateTime.now());
 					long hours = dur.toHours();
-					long mins = dur.toMinutes();
-					msg.add("&f" + entry.getKey().getPlayerName() + " : " + hours + ":" + mins + " ago");
+					long mins = dur.toMinutes() - (hours * 60);
+					msg.add("&f" + entry.getKey().getPlayerName() + " : " + hours + " hours and " + mins + " minutes ago");
 				}
 
 				sendMessage(sender, msg);
@@ -116,8 +116,8 @@ public class CommandLoader {
 						Duration dur = Duration.of(user.getOntime(), ChronoUnit.MILLIS);
 						ArrayList<String> msg = new ArrayList<String>();
 						msg.add("&cYour Ontime");
-						msg.add("&c" + dur.toDays() + " Days " + dur.toHours() + " Hours " + dur.toMinutes()
-								+ " Minutes");
+						msg.add("&c" + dur.toDays() + " Days " + (dur.toHours() - (dur.toDays() * 24)) + " Hours "
+								+ (dur.toMinutes() - (dur.toHours() * 60)) + " Minutes");
 						sendMessage(sender, msg);
 
 					}
@@ -132,7 +132,8 @@ public class CommandLoader {
 				Duration dur = Duration.of(user.getOntime(), ChronoUnit.MILLIS);
 				ArrayList<String> msg = new ArrayList<String>();
 				msg.add("&c" + args[1] + " Ontime");
-				msg.add("&c" + dur.toDays() + " Days " + dur.toHours() + " Hours " + dur.toMinutes() + " Minutes");
+				msg.add("&c" + dur.toDays() + " Days " + (dur.toHours() - (dur.toDays() * 24)) + " Hours "
+						+ (dur.toMinutes() - (dur.toHours() * 60)) + " Minutes");
 				sendMessage(sender, msg);
 
 			}

@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.Ben12345rocks.AdvancedCore.Objects.UUID;
 import com.Ben12345rocks.AdvancedPlayerStats.Main;
+import com.Ben12345rocks.AdvancedPlayerStats.Listeners.PlayerOntimeAchivementEvent;
+import com.Ben12345rocks.AdvancedPlayerStats.Rewards.OntimeAchivement;
 
 public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 
@@ -121,8 +124,27 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 		if (login > 0) {
 			long cur = System.currentTimeMillis();
 			Duration dur = Duration.of(cur - login, ChronoUnit.MILLIS);
+			Duration currentOntime = Duration.of(getOntime(), ChronoUnit.MILLIS);
 			setOntime(Duration.of(getOntime(), ChronoUnit.MILLIS).plus(dur).toMillis());
-			setLoginTime(0);
+			Duration newOntime = Duration.of(getOntime(), ChronoUnit.MILLIS);
+			if (currentOntime.toHours() != newOntime.toHours()) {
+				for (int i = (int) (currentOntime.toHours() + 1); i <= newOntime.toHours(); i++) {
+					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.HOURS,
+							i);
+					Bukkit.getPluginManager().callEvent(event);
+				}
+			}
+			if (currentOntime.toDays() != newOntime.toDays()) {
+				for (int i = (int) (currentOntime.toDays() + 1); i <= newOntime.toDays(); i++) {
+					PlayerOntimeAchivementEvent event = new PlayerOntimeAchivementEvent(this, OntimeAchivement.DAYS, i);
+					Bukkit.getPluginManager().callEvent(event);
+				}
+			}
+			if (isOnline()) {
+				updateLoginTime();
+			} else {
+				setLoginTime(0);
+			}
 		}
 	}
 }

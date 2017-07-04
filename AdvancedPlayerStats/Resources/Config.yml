@@ -1,0 +1,42 @@
+DataStorage: SQLITE
+
+# Information for mysql
+MySQL:
+  Host: ''
+  # Default port is 3306
+  Port: 3306 
+  Database: ''
+  Username: ''
+  Password: ''
+  # Max number of connections
+  MaxConnections: 1
+  
+# Debug
+Debug: false
+
+# Extra Debug
+# Only needed in extreme cases
+ExtraDebug: false
+
+# Debug info ingame
+# Players with permission "VotingPlugin.Debug"
+# will see debug info if debug is true
+DebugInGame: false
+
+# Will log debug messages to VotingPlugin/Log/log.txt
+# Requires Debug to be on
+LogDebugToFile: false
+
+Format:
+  NoPerms: '&cYou do not have enough permission!'
+  NotNumber: '&cError on &6%arg%&c, number expected!'
+  HelpLine: '&3&l%Command% - &3%HelpMessage%'
+  
+OntimeRewards:
+  '5':
+    Enabled: true
+    # Valid options: HOURS, DAYS
+    TimeType: 'HOURS'
+    Rewards:
+      Messages:
+        Player: 'You played for %time% %timetype%'
