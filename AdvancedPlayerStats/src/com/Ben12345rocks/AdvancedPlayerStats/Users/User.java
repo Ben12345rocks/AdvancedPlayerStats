@@ -78,7 +78,8 @@ public class User extends com.Ben12345rocks.AdvancedCore.Objects.User {
 	public boolean wasOnlineToday() {
 		LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(getLastOnline()), ZoneId.systemDefault());
 		LocalDateTime now = LocalDateTime.now();
-		if (date.getDayOfMonth() == now.getDayOfMonth()) {
+		if (date.getDayOfMonth() == now.getDayOfMonth() && date.getMonthValue() == now.getMonthValue()
+				&& date.getYear() == now.getYear()) {
 			return true;
 		}
 		return false;
