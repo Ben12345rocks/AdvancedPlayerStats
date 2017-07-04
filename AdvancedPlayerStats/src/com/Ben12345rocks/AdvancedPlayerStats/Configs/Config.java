@@ -104,7 +104,7 @@ public class Config extends YMLFile {
 	}
 
 	private ConfigurationSection getOntimeRewardsEach(int reward) {
-		return getData().getConfigurationSection("OntimeRewards." + reward);
+		return getData().getConfigurationSection("OntimeRewardsEach." + reward);
 	}
 
 	public boolean getOntimeRewardsEachEnabled(int reward) {

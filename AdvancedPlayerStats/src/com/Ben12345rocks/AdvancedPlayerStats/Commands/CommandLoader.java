@@ -61,6 +61,17 @@ public class CommandLoader {
 
 	public void loadCommands() {
 		plugin.commands = new ArrayList<CommandHandler>();
+		plugin.commands
+				.add(new CommandHandler(new String[] { "Reload" }, "AdvancedPlayerStats.Reload", "Reload plugin") {
+
+					@Override
+					public void execute(CommandSender sender, String[] args) {
+						plugin.reload();
+
+						sendMessage(sender, "&cAdvancedPlayerStats reloaded");
+
+					}
+				});
 		plugin.commands.add(new CommandHandler(new String[] { "Today" }, "AdvancedPlayerStats.Today",
 				"See whose been online today") {
 

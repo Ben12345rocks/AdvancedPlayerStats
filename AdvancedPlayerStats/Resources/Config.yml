@@ -34,11 +34,19 @@ Format:
   
 OntimeRewards:
   '5':
-    Enabled: true
+    Enabled: false
     # Valid options: HOURS, DAYS
     TimeType: 'HOURS'
-    # If true, player gets reward for every 5 hours
     RewardEach: false
+    Rewards:
+      Messages:
+        Player: 'You played for %time% %timetype%'  
+  
+OntimeRewardsEach:
+  '5':
+    Enabled: false
+    # Valid options: HOURS, DAYS
+    TimeType: 'HOURS'
     Rewards:
       Messages:
         Player: 'You played for %time% %timetype%'

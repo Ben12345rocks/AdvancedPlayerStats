@@ -116,6 +116,7 @@ public class Main extends JavaPlugin {
 		loadOntimeRewards();
 
 		update = true;
+		update();
 		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
 
 			@Override
@@ -125,7 +126,7 @@ public class Main extends JavaPlugin {
 					update = false;
 				}
 			}
-		}, 0, 1000 * 60 * 3);
+		}, 1000 * 60 * 3, 1000 * 60 * 3);
 
 		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
 
@@ -137,34 +138,39 @@ public class Main extends JavaPlugin {
 				}
 				plugin.debug("Ontime updated");
 			}
-		}, 0, 1000 * 60 * 15);
+		}, 1000 * 60 * 15, 1000 * 60 * 15);
 
 		plugin.getLogger().info("Enabled AdvancedPlayerStats " + plugin.getDescription().getVersion());
 	}
 
 	private void loadOntimeRewards() {
-		ontimeRewards = new ArrayList<OntimeReward>();
-		for (String str : Config.getInstance().getOntimeRewards()) {
-			if (StringUtils.getInstance().isInt(str)) {
-				int reward = Integer.parseInt(str);
-				if (Config.getInstance().getOntimeRewardEnabled(reward)) {
-					ontimeRewards.add(new OntimeReward(reward,
-							OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardTimeType(reward)),
-							Config.getInstance().getOntimeRewardPath(reward)));
+		try {
+			ontimeRewards = new ArrayList<OntimeReward>();
+			for (String str : Config.getInstance().getOntimeRewards()) {
+				if (StringUtils.getInstance().isInt(str)) {
+					int reward = Integer.parseInt(str);
+					if (Config.getInstance().getOntimeRewardEnabled(reward)) {
+						ontimeRewards.add(new OntimeReward(reward,
+								OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardTimeType(reward)),
+								Config.getInstance().getOntimeRewardPath(reward)));
+					}
 				}
 			}
-		}
 
-		ontimeRewardsEach = new ArrayList<OntimeReward>();
-		for (String str : Config.getInstance().getOntimeRewardsEach()) {
-			if (StringUtils.getInstance().isInt(str)) {
-				int reward = Integer.parseInt(str);
-				if (Config.getInstance().getOntimeRewardsEachEnabled(reward)) {
-					ontimeRewardsEach.add(new OntimeReward(reward,
-							OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardsEachTimeType(reward)),
-							Config.getInstance().getOntimeRewardsEachPath(reward)));
+			ontimeRewardsEach = new ArrayList<OntimeReward>();
+			for (String str : Config.getInstance().getOntimeRewardsEach()) {
+				if (StringUtils.getInstance().isInt(str)) {
+					int reward = Integer.parseInt(str);
+					if (Config.getInstance().getOntimeRewardsEachEnabled(reward)) {
+						ontimeRewardsEach.add(new OntimeReward(reward,
+								OntimeAchivement.getTimeType(Config.getInstance().getOntimeRewardsEachTimeType(reward)),
+								Config.getInstance().getOntimeRewardsEachPath(reward)));
+					}
 				}
 			}
+		} catch (Exception e) {
+			plugin.getLogger().warning("Failed to load ontime rewards: " + e.getMessage());
+			AdvancedCoreHook.getInstance().debug(e);
 		}
 	}
 
@@ -188,9 +194,10 @@ public class Main extends JavaPlugin {
 	}
 
 	public void reload() {
-		updateAdvancedCoreHook();
 		Config.getInstance().reloadData();
 		loadOntimeRewards();
+		updateAdvancedCoreHook();
+		update();
 	}
 
 	/**
