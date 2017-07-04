@@ -126,6 +126,18 @@ public class Main extends JavaPlugin {
 			}
 		}, 0, 1000 * 60 * 3);
 
+		AdvancedCoreHook.getInstance().getTimer().schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				for (String uuid : getUserManager().getAllUUIDs()) {
+					User user = getUserManager().getAdvancedPlayerStatsUser(new UUID(uuid));
+					user.updateOntime();
+				}
+				plugin.debug("Ontime updated");
+			}
+		}, 0, 1000 * 60 * 15);
+
 		plugin.getLogger().info("Enabled AdvancedPlayerStats " + plugin.getDescription().getVersion());
 	}
 
@@ -219,6 +231,8 @@ public class Main extends JavaPlugin {
 			}
 		}
 		onlineToday = sortByValuesLong(onlineToday, false);
+		
+		debug("Background task ran");
 	}
 
 	private HashMap<User, Long> sortByValuesLong(HashMap<User, Long> unsortMap, final boolean order) {

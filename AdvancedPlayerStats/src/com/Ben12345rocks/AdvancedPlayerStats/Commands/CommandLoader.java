@@ -76,7 +76,8 @@ public class CommandLoader {
 					Duration dur = Duration.between(lastOnline, LocalDateTime.now());
 					long hours = dur.toHours();
 					long mins = dur.toMinutes() - (hours * 60);
-					msg.add("&f" + entry.getKey().getPlayerName() + " : " + hours + " hours and " + mins + " minutes ago");
+					msg.add("&f" + entry.getKey().getPlayerName() + " : " + hours + " hours and " + mins
+							+ " minutes ago");
 				}
 
 				sendMessage(sender, msg);
@@ -190,6 +191,34 @@ public class CommandLoader {
 					}
 
 				});
+
+		plugin.commands.add(new CommandHandler(new String[] { "AddOntime", "(Player)", "(Number)" },
+				"AdvancedPlayerStats.AddOntime", "Add to players ontime") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				User user = UserManager.getInstance().getAdvancedPlayerStatsUser(args[1]);
+				user.updateOntime();
+				user.setLoginTime(System.currentTimeMillis() - Integer.parseInt(args[2]) * 1000 * 60);
+				user.updateOntime();
+				sendMessage(sender, "Set ontime to " + user.getOntime() / 1000 / 60 + " for " + args[1]);
+			}
+		});
+		plugin.commands.add(new CommandHandler(new String[] { "SetOntime", "(Player)", "(Number)" },
+				"AdvancedPlayerStats.SetOntime", "Set players ontime") {
+
+			@Override
+			public void execute(CommandSender sender, String[] args) {
+				User user = UserManager.getInstance().getAdvancedPlayerStatsUser(args[1]);
+				user.setOntime(Integer.parseInt(args[2]) * 1000 * 60);
+				sendMessage(sender, "Set ontime to " + user.getOntime() / 1000 / 60 + " for " + args[1]);
+			}
+		});
+
+		plugin.commands.addAll(com.Ben12345rocks.AdvancedCore.Commands.CommandLoader.getInstance()
+				.getBasicAdminCommands("AdvancedPlayerStats"));
+		plugin.commands.addAll(com.Ben12345rocks.AdvancedCore.Commands.CommandLoader.getInstance()
+				.getBasicCommands("AdvancedPlayerStats"));
 
 		loadTabComplete();
 
